@@ -35,10 +35,8 @@ function Home() {
     handleConnectToMetamask();
   }, []);
 
-  // listen for account changes
   useEffect(() => {
-    // @ts-ignore
-    window.ethereum.on("accountsChanged", async ([newAddress]) => {
+    const handleAccountsChanged = async ([newAddress]: string[]) => {
       if (!newAddress) return;
       const balanceResult = await getBalance({ address: newAddress });
       if (!balanceResult.ok) return setError(balanceResult.error);
@@ -53,10 +51,9 @@ function Home() {
         };
       });
       setError(null);
-    });
+    };
 
-    // @ts-ignore
-    window.ethereum.on("chainChanged", async (newHexChain) => {
+    const handleChainChanged = async (newHexChain: string) => {
       setAccount((currentAccount) => {
         if (!currentAccount) return currentAccount;
 
@@ -83,7 +80,20 @@ function Home() {
         };
       });
       setError(null);
-    });
+    };
+
+    // @ts-ignore
+    window.ethereum.on("accountsChanged", handleAccountsChanged);
+
+    // @ts-ignore
+    window.ethereum.on("chainChanged", handleChainChanged);
+
+    return () => {
+      // @ts-ignore
+      window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+      // @ts-ignore
+      window.ethereum.removeListener("chainChanged", handleChainChanged);
+    };
   }, [account]);
 
   return (

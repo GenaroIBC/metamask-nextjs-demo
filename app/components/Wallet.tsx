@@ -7,7 +7,7 @@ type Props = {
 
 export function Wallet({ account }: Props) {
   return (
-    <article className="bg-blue-900 rounded text-center flex flex-col border-blue-900 border-2 border-solid shadow-2xl">
+    <article className="bg-blue-900 rounded text-center flex flex-col border-blue-900 border-2 border-solid shadow-2xl sm:min-w-[300px]">
       <p className="text-white/80 bg-black/30 w-full p-4 font-medium">
         {account.address.slice(0, 7) +
           "..." +
@@ -15,11 +15,11 @@ export function Wallet({ account }: Props) {
       </p>
       <span className="text-3xl font-medium p-4">{account.balance} ETH</span>
 
-      <span className="text-xl font-medium p-4 flex gap-2 items-center">
+      <span className="text-xl font-medium p-4 flex gap-2 items-center opacity-80">
         <span className="w-4 inline-block">
           <NetworkIcon />
         </span>
-        <span>{account.networkName}</span>
+        <span className="text-sm">{account.networkName}</span>
       </span>
     </article>
   );

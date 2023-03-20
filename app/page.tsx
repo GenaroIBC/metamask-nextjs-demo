@@ -106,15 +106,13 @@ function Home() {
   }, [account]);
 
   return (
-    <main className="flex flex-col gap-12 justify-center items-center w-screen h-screen">
-      <h1 className="text-2xl font-bold ">Metamask Integration Demo</h1>
+    <main className="flex flex-col gap-12 justify-center items-center w-screen h-screen p-4">
+      <h1 className="text-2xl font-bold">Metamask Integration Demo</h1>
 
       <div className="flex flex-col gap-4 justify-center items-center rounded">
         {isRetrievingSession ? (
           <div className="relative">
-            <div className="absolute backdrop-blur-[2px] grid place-content-center font-bold top-0 left-0 right-0 bottom-0">
-              <span className="bg-black/60 rounded p-4">LOADING...</span>
-            </div>
+            <div className="absolute backdrop-blur-[2px] grid place-content-center font-bold top-0 left-0 right-0 bottom-0"></div>
             <div className="opacity">
               <Wallet
                 account={{

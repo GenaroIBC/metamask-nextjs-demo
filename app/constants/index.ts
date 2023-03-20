@@ -1,4 +1,4 @@
-export const CHAINS_ID = {
+export const CHAIN_IDs = {
   1: "Mainnet",
   3: "Ropsten",
   4: "Rinkeby",

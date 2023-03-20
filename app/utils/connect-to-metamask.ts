@@ -13,6 +13,7 @@ export async function connectToMetamask(): Promise<
 
     if (!accounts?.length) return { ok: false, error: "No account detected" };
 
+    localStorage.setItem("hasConnectedToMetaMask", "true");
     return { ok: true, data: accounts[0] };
   } catch (error) {
     // @ts-ignore

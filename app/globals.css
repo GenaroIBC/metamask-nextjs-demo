@@ -26,3 +26,8 @@ body {
   margin: 0;
   padding: 0 1rem;
 }
+
+button {
+  padding: 0.8rem 1.2rem;
+  border-radius: 4px;
+}

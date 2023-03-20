@@ -3,16 +3,26 @@
 import { useEffect, useState } from "react";
 import { ConnectWallet } from "./components/ConnectWallet";
 import { Wallet } from "./components/Wallet";
-import { CHAINS_ID } from "./constants";
+import { CHAIN_IDs } from "./constants";
 import { Account } from "./types";
 import { connectToMetamask } from "./utils/connect-to-metamask";
 import { getBalance } from "./utils/get-address-balance";
 
 function Home() {
   const [account, setAccount] = useState<Account | null>(null);
+  const [isRetrievingSession, setRetrievingSession] = useState(true);
+
   const [error, setError] = useState<string | null>(null);
 
-  const handleConnectToMetamask = async () => {
+  const handleRetrieveSession = async () => {
+    setRetrievingSession(true);
+
+    const hasConnected = JSON.parse(
+      localStorage.getItem("hasConnectedToMetaMask") ?? "false"
+    );
+
+    if (!hasConnected) return setRetrievingSession(false);
+
     const result = await connectToMetamask();
 
     if (!result.ok) return setError(result.error);
@@ -25,14 +35,15 @@ function Home() {
         address,
         balance: balanceResult.data,
         // @ts-ignore
-        networkName: CHAINS_ID[ethereum.networkVersion] ?? "Unknown network",
+        networkName: CHAIN_IDs[ethereum.networkVersion] ?? "Unknown network",
       };
     });
     setError(null);
+    setRetrievingSession(false);
   };
 
   useEffect(() => {
-    handleConnectToMetamask();
+    handleRetrieveSession();
   }, []);
 
   useEffect(() => {
@@ -47,7 +58,7 @@ function Home() {
           balance: balanceResult.data,
           networkName:
             // @ts-ignore
-            CHAINS_ID[window.ethereum.networkVersion] ?? "Unknown network",
+            CHAIN_IDs[window.ethereum.networkVersion] ?? "Unknown network",
         };
       });
       setError(null);
@@ -61,7 +72,7 @@ function Home() {
           ...currentAccount,
           networkName:
             // @ts-ignore
-            CHAINS_ID[parseInt(newHexChain / Math.pow(10, 18))] ??
+            CHAIN_IDs[parseInt(newHexChain / Math.pow(10, 18))] ??
             "Unknown chain",
         };
       });
@@ -76,7 +87,7 @@ function Home() {
           balance: balanceResult.data,
           networkName:
             // @ts-ignore
-            CHAINS_ID[window.ethereum.networkVersion] ?? "Unknown network",
+            CHAIN_IDs[window.ethereum.networkVersion] ?? "Unknown network",
         };
       });
       setError(null);
@@ -101,10 +112,25 @@ function Home() {
       <h1 className="text-2xl font-bold ">Metamask Integration Demo</h1>
 
       <div className="flex flex-col gap-4 justify-center items-center rounded">
-        {account ? (
+        {isRetrievingSession ? (
+          <div className="relative">
+            <div className="absolute backdrop-blur-[2px] grid place-content-center font-bold top-0 left-0 right-0 bottom-0">
+              <span className="bg-black/60 rounded p-4">LOADING...</span>
+            </div>
+            <div className="opacity">
+              <Wallet
+                account={{
+                  address: "0x1000101100100100101100",
+                  balance: 0,
+                  networkName: "Mainnet",
+                }}
+              />
+            </div>
+          </div>
+        ) : account ? (
           <Wallet account={account} />
         ) : (
-          <ConnectWallet handleConnect={handleConnectToMetamask} />
+          <ConnectWallet handleConnect={handleRetrieveSession} />
         )}
       </div>
 

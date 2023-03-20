@@ -15,14 +15,6 @@ function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const handleRetrieveSession = async () => {
-    setRetrievingSession(true);
-
-    const hasConnected = JSON.parse(
-      localStorage.getItem("hasConnectedToMetaMask") ?? "false"
-    );
-
-    if (!hasConnected) return setRetrievingSession(false);
-
     const result = await connectToMetamask();
 
     if (!result.ok) return setError(result.error);
@@ -39,11 +31,17 @@ function Home() {
       };
     });
     setError(null);
-    setRetrievingSession(false);
   };
 
   useEffect(() => {
-    handleRetrieveSession();
+    setRetrievingSession(true);
+    const hasConnected = JSON.parse(
+      localStorage.getItem("hasConnectedToMetaMask") ?? "false"
+    );
+
+    if (!hasConnected) return setRetrievingSession(false);
+
+    handleRetrieveSession().finally(() => setRetrievingSession(false));
   }, []);
 
   useEffect(() => {

@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { ConnectWallet } from "./components/ConnectWallet";
 import { Wallet } from "./components/Wallet";
-import { CHAIN_IDs } from "./constants";
 import { Account } from "./types";
 import { connectToMetamask } from "./utils/connect-to-metamask";
 import { getBalance } from "./utils/get-address-balance";
+import { getNetworkName } from "./utils/get-network-name";
 
 function Home() {
   const [account, setAccount] = useState<Account | null>(null);
@@ -21,13 +21,15 @@ function Home() {
     const address = result.data;
     const balanceResult = await getBalance({ address });
     if (!balanceResult.ok) return setError(balanceResult.error);
-    // @ts-ignore
+
     setAccount(() => {
       return {
         address,
         balance: balanceResult.data,
-        // @ts-ignore
-        networkName: CHAIN_IDs[ethereum.networkVersion] ?? "Unknown network",
+        networkName: getNetworkName({
+          // @ts-ignore
+          chainID: window.ethereum.networkVersion,
+        }),
       };
     });
     setError(null);
@@ -54,9 +56,10 @@ function Home() {
         return {
           address: newAddress,
           balance: balanceResult.data,
-          networkName:
+          networkName: getNetworkName({
             // @ts-ignore
-            CHAIN_IDs[window.ethereum.networkVersion] ?? "Unknown network",
+            chainID: window.ethereum.networkVersion,
+          }),
         };
       });
       setError(null);
@@ -68,10 +71,10 @@ function Home() {
 
         return {
           ...currentAccount,
-          networkName:
-            // @ts-ignore
-            CHAIN_IDs[parseInt(newHexChain / Math.pow(10, 18))] ??
-            "Unknown chain",
+          networkName: getNetworkName({
+            chainID: newHexChain,
+            isHexadecimal: true,
+          }),
         };
       });
       if (!account) return;
@@ -83,9 +86,10 @@ function Home() {
         return {
           address: account.address,
           balance: balanceResult.data,
-          networkName:
-            // @ts-ignore
-            CHAIN_IDs[window.ethereum.networkVersion] ?? "Unknown network",
+          networkName: getNetworkName({
+            chainID: newHexChain,
+            isHexadecimal: true,
+          }),
         };
       });
       setError(null);

@@ -1,91 +1,106 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import { useEffect, useState } from "react";
+import { ConnectWallet } from "./components/ConnectWallet";
+import { Wallet } from "./components/Wallet";
+import { CHAINS_ID } from "./constants";
+import { Account } from "./types";
+import { connectToMetamask } from "./utils/connect-to-metamask";
+import { getBalance } from "./utils/get-address-balance";
 
-export default function Home() {
+function Home() {
+  const [account, setAccount] = useState<Account | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleConnectToMetamask = async () => {
+    const result = await connectToMetamask();
+
+    if (!result.ok) return setError(result.error);
+    const address = result.data;
+    const balanceResult = await getBalance({ address });
+    if (!balanceResult.ok) return setError(balanceResult.error);
+    // @ts-ignore
+    setAccount(() => {
+      return {
+        address,
+        balance: balanceResult.data,
+        // @ts-ignore
+        networkName: CHAINS_ID[ethereum.networkVersion] ?? "Unknown network",
+      };
+    });
+    setError(null);
+  };
+
+  useEffect(() => {
+    handleConnectToMetamask();
+  }, []);
+
+  // listen for account changes
+  useEffect(() => {
+    // @ts-ignore
+    window.ethereum.on("accountsChanged", async ([newAddress]) => {
+      if (!newAddress) return;
+      const balanceResult = await getBalance({ address: newAddress });
+      if (!balanceResult.ok) return setError(balanceResult.error);
+
+      setAccount(() => {
+        return {
+          address: newAddress,
+          balance: balanceResult.data,
+          networkName:
+            // @ts-ignore
+            CHAINS_ID[window.ethereum.networkVersion] ?? "Unknown network",
+        };
+      });
+      setError(null);
+    });
+
+    // @ts-ignore
+    window.ethereum.on("chainChanged", async (newHexChain) => {
+      setAccount((currentAccount) => {
+        if (!currentAccount) return currentAccount;
+
+        return {
+          ...currentAccount,
+          networkName:
+            // @ts-ignore
+            CHAINS_ID[parseInt(newHexChain / Math.pow(10, 18))] ??
+            "Unknown chain",
+        };
+      });
+      if (!account) return;
+
+      const balanceResult = await getBalance({ address: account.address });
+      if (!balanceResult.ok) return setError(balanceResult.error);
+
+      setAccount(() => {
+        return {
+          address: account.address,
+          balance: balanceResult.data,
+          networkName:
+            // @ts-ignore
+            CHAINS_ID[window.ethereum.networkVersion] ?? "Unknown network",
+        };
+      });
+      setError(null);
+    });
+  }, [account]);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <main className="flex flex-col gap-12 justify-center items-center w-screen h-screen">
+      <h1 className="text-2xl font-bold ">Metamask Integration Demo</h1>
+
+      <div className="flex flex-col gap-4 justify-center items-center rounded">
+        {account ? (
+          <Wallet account={account} />
+        ) : (
+          <ConnectWallet handleConnect={handleConnectToMetamask} />
+        )}
       </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      {error && <p className="text-red-500 p-4">{error}</p>}
     </main>
-  )
+  );
 }
+
+export default Home;

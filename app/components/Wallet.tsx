@@ -1,11 +1,13 @@
 import { Account } from "../types";
 import { NetworkIcon } from "./NetworkIcon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowIcon, BalanceIcon } from "./shared/Icons";
 
 type Props = {
   account: Account;
 };
+
+const toggleWalletButtonID = "toggle-wallet-button";
 
 export function Wallet({ account }: Props) {
   const [isWalletOpen, setIsWalletOpen] = useState(false);
@@ -15,8 +17,27 @@ export function Wallet({ account }: Props) {
     "..." +
     account.address.slice(account.address.length - 5);
 
+  useEffect(() => {
+    const handleCloseWallet = (e: MouseEvent) => {
+      const eventTarget = e.target as HTMLElement;
+
+      if (
+        !eventTarget.matches(`#${toggleWalletButtonID} *`) &&
+        !eventTarget.matches(`#${toggleWalletButtonID}`)
+      ) {
+        setIsWalletOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleCloseWallet);
+
+    return () => {
+      document.removeEventListener("click", handleCloseWallet);
+    };
+  }, []);
+
   return (
-    <section className="relative">
+    <section id={toggleWalletButtonID} className="relative">
       <button
         onClick={() => setIsWalletOpen((currentStatus) => !currentStatus)}
         className="font-medium flex items-center justify-center gap-2 cursor-pointer transition-all bg-slate-600/20 hover:bg-slate-600/30 active:bg-slate-600/50 px-4 rounded-xl text-base"

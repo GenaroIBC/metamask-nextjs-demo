@@ -1,12 +1,12 @@
 import "./globals.css";
-import { Epilogue } from "next/font/google";
+import { Poppins } from "next/font/google";
 
 export const metadata = {
   title: "MetaMask-NextJS demo",
   description: "A demo app integrating MetaMask",
 };
 
-const font = Epilogue({
+const font = Poppins({
   weight: ["400"],
   subsets: ["latin"],
 });

@@ -55,30 +55,33 @@ export function Wallet({ account }: Props) {
         </div>
       </button>
       <div
-        className="absolute top-full left-1/2 transition-transform duration-500"
+        className="absolute top-full right-0 transition-transform duration-500 shadow-2xl"
         style={{
           animation: isWalletOpen
             ? "fadeIn 0.5s linear both"
             : "fadeOut 0.3s linear both",
-          transform: `translateX(-50%) ${
-            isWalletOpen ? "translateY(1rem)" : "translateY(0)"
-          }`,
+          transform: `${isWalletOpen ? "translateY(1rem)" : "translateY(0)"}`,
         }}
       >
-        <article className="bg-blue-900 rounded text-center flex flex-col border-blue-900 border-2 border-solid shadow-2xl sm:min-w-[300px]">
-          <p className="text-white/80 bg-black/30 w-full p-4 font-medium">
-            {trimmedAddress}
-          </p>
+        <article className="bg-slate-900 rounded-xl text-center flex flex-col shadow-2xl">
+          <div className="flex gap-2 items-center text-white/80 bg-black/30 p-4">
+            <div className="aspect-square">
+              <BalanceIcon />
+            </div>
+            <p className="font-medium">{trimmedAddress}</p>
+          </div>
           <span className="text-3xl font-medium p-4">
             {account.balance} ETH
           </span>
 
-          <span className="text-xl font-medium p-4 flex gap-2 items-center opacity-80">
-            <span className="w-4 inline-block">
-              <NetworkIcon />
+          <div className="p-4">
+            <span className="text-xl font-medium flex gap-2 items-center opacity-80 bg-black/30 w-full rounded-lg p-4">
+              <span className="w-4 inline-block">
+                <NetworkIcon />
+              </span>
+              <span className="text-sm">{account.networkName}</span>
             </span>
-            <span className="text-sm">{account.networkName}</span>
-          </span>
+          </div>
         </article>
       </div>
     </section>

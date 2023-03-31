@@ -111,7 +111,7 @@ function Home() {
   }, [account]);
 
   return (
-    <header className="flex gap-12 justify-between items-center bg-[#000c19] p-8">
+    <header className="flex flex-col sm:flex-row gap-12 justify-between items-center bg-[#000c19] p-8">
       <h1 className="text-2xl font-bold">Metamask Integration Demo</h1>
 
       <div className="flex flex-col gap-4 justify-center items-center rounded">

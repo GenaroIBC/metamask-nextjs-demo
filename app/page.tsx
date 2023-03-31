@@ -7,6 +7,7 @@ import { Account } from "./types";
 import { connectToMetamask } from "./utils/connect-to-metamask";
 import { getBalance } from "./utils/get-address-balance";
 import { getNetworkName } from "./utils/get-network-name";
+import { WALLET_PREVIEW_ACCOUNT } from "./constants";
 
 function Home() {
   const [account, setAccount] = useState<Account | null>(null);
@@ -110,7 +111,7 @@ function Home() {
   }, [account]);
 
   return (
-    <main className="flex flex-col gap-12 justify-center items-center w-screen h-screen p-4">
+    <header className="flex gap-12 justify-between items-center bg-[#000c19] p-8">
       <h1 className="text-2xl font-bold">Metamask Integration Demo</h1>
 
       <div className="flex flex-col gap-4 justify-center items-center rounded">
@@ -118,13 +119,7 @@ function Home() {
           <div className="relative">
             <div className="absolute backdrop-blur-[2px] grid place-content-center font-bold top-0 left-0 right-0 bottom-0"></div>
             <div className="opacity">
-              <Wallet
-                account={{
-                  address: "0x1000101100100100101100",
-                  balance: 0,
-                  networkName: "Mainnet",
-                }}
-              />
+              <Wallet account={WALLET_PREVIEW_ACCOUNT} />
             </div>
           </div>
         ) : account ? (
@@ -135,7 +130,7 @@ function Home() {
       </div>
 
       {error && <p className="text-red-500 p-4">{error}</p>}
-    </main>
+    </header>
   );
 }
 

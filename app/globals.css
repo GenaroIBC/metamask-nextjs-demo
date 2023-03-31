@@ -9,7 +9,7 @@
 }
 
 :root {
-  background-color: #003165;
+  background-color: rgb(15, 23, 42);
   color: #fff;
 
   font-size: 16px;
@@ -18,12 +18,8 @@
 }
 
 body {
-  display: grid;
-  place-content: center;
-  width: 100vw;
-  height: 100vh;
-
-  margin: 0;
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 0 1rem;
 }
 
@@ -35,5 +31,31 @@ button {
 @media screen and (max-width: 768px) {
   :root {
     font-size: 14px;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  100% {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: initial;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: initial;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 }
